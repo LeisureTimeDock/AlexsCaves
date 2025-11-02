@@ -68,6 +68,10 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
     @Shadow
     public abstract double getY();
 
+    @Shadow public abstract double getX();
+
+    @Shadow public abstract double getZ();
+
     private static final EntityDataAccessor<Float> MAGNET_DELTA_X = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> MAGNET_DELTA_Y = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> MAGNET_DELTA_Z = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
@@ -164,9 +168,12 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
     )
     //must override entire method for compatibility with Radium mod
     public void ac_collide(Vec3 deltaIn, CallbackInfoReturnable<Vec3> cir) {
-
+        if (!this.level().hasChunkAt(BlockPos.containing(this.getX(), this.getY(), this.getZ()))) {
+            cir.setReturnValue(deltaIn);
+            return;
+        }
         AABB aabb = this.getBoundingBox();
-        Entity thisEntity = (Entity) (Object) this;
+        Entity thisEntity = Entity.class.cast(this);
         //AC CODE START
         List<VoxelShape> list;
         //fix infinity voxel collection crash for ItemEntity

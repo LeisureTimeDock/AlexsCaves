@@ -303,6 +303,10 @@ public class MagnetUtil {
     }
 
     public static List<VoxelShape> getMovingBlockCollisions(@Nullable Entity entity, AABB aabb) {
+        if (entity == null) return List.of();
+        if (!entity.level().hasChunkAt(BlockPos.containing(entity.getX(), entity.getY(), entity.getZ()))) {
+            return List.of();
+        }
         if (aabb.getSize() < 1.0E-7D) {
             return List.of();
         } else {
